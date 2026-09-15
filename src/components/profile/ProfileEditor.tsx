@@ -140,24 +140,40 @@ export function ProfileEditor({ athlete }: ProfileEditorProps) {
   function save() {
     setMessage(null);
     startTransition(async () => {
-      const result = await updateAthleteProfileAction({
-        firstName: draft.firstName,
-        age: draft.age,
-        experienceLevel: draft.experienceLevel,
-        sports: draft.sports,
-        goals: draft.goals,
-        primaryGoal: draft.primaryGoal,
-        goalNotes: draft.goalNotes,
-        equipment: draft.equipment,
-        sessionDuration: draft.sessionDuration,
-        daysPerWeek: draft.daysPerWeek,
-        availableDays: draft.availableDays,
-        season: draft.season,
-        schedule: draft.schedule,
-        onboardingCompleted: true,
-      });
-      setErrors(result.errors);
-      if (result.ok) setMessage(result.message ?? "Saved.");
+      try {
+        const result = await updateAthleteProfileAction({
+          firstName: draft.firstName,
+          age: draft.age,
+          experienceLevel: draft.experienceLevel,
+          sports: draft.sports,
+          goals: draft.goals,
+          primaryGoal: draft.primaryGoal,
+          goalNotes: draft.goalNotes,
+          equipment: draft.equipment,
+          sessionDuration: draft.sessionDuration,
+          daysPerWeek: draft.daysPerWeek,
+          availableDays: draft.availableDays,
+          season: draft.season,
+          schedule: draft.schedule,
+          onboardingCompleted: true,
+        });
+        setErrors(result.errors);
+        if (result.ok) {
+          setMessage(result.message ?? "Profile saved.");
+          setDraft((prev) => ({
+            ...prev,
+            firstName: draft.firstName.trim(),
+            age: draft.age,
+          }));
+        }
+      } catch (error) {
+        setErrors({
+          form:
+            error instanceof Error
+              ? error.message
+              : "Could not save profile. Try again.",
+        });
+      }
     });
   }
 
@@ -187,6 +203,12 @@ export function ProfileEditor({ athlete }: ProfileEditorProps) {
             className="field-input mt-2"
             value={draft.age ?? ""}
             onChange={(e) =>
+              setDraft((prev) => ({
+                ...prev,
+                age: e.target.value ? Number(e.target.value) : undefined,
+              }))
+            }
+            onBlur={(e) =>
               setDraft((prev) => ({
                 ...prev,
                 age: e.target.value ? Number(e.target.value) : undefined,

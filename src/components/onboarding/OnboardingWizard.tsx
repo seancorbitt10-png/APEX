@@ -790,9 +790,67 @@ export function OnboardingWizard({ initial }: OnboardingWizardProps) {
         ) : null}
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border-subtle pt-5">
-          <Button variant="ghost" onClick={back}>
-            {stepIndex === 0 ? "Back to sign in" : "Back"}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="ghost" onClick={back}>
+              {stepIndex === 0 ? "Back to sign in" : "Back"}
+            </Button>
+            {process.env.NODE_ENV === "development" ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setDraft({
+                    firstName: "Sean",
+                    age: 22,
+                    experienceLevel: "intermediate",
+                    sports: [
+                      {
+                        sportId: "baseball",
+                        isPrimary: true,
+                        positions: ["Outfield"],
+                      },
+                    ],
+                    goals: ["speed", "explosiveness"],
+                    primaryGoal: "speed",
+                    goalNotes:
+                      "I want to become faster and more explosive in the outfield.",
+                    equipment: ["full-gym", "field"],
+                    sessionDuration: "45-60",
+                    daysPerWeek: 4,
+                    availableDays: [1, 2, 4, 6],
+                    season: "in-season",
+                    schedule: [
+                      {
+                        id: "practice_2",
+                        type: "practice",
+                        title: "Team Practice",
+                        sportId: "baseball",
+                        dayOfWeek: 2,
+                        recurring: true,
+                        importance: "normal",
+                        durationMinutes: 120,
+                      },
+                      {
+                        id: "game_6",
+                        type: "game",
+                        title: "Game",
+                        sportId: "baseball",
+                        dayOfWeek: 6,
+                        recurring: true,
+                        importance: "high",
+                        durationMinutes: 180,
+                      },
+                    ],
+                    onboardingCompleted: false,
+                  });
+                  setErrors({});
+                  goTo(STEPS.length - 1);
+                }}
+              >
+                Prefill Sean (dev)
+              </Button>
+            ) : null}
+          </div>
           {step.id === "review" ? (
             <Button size="lg" onClick={submit} disabled={pending}>
               {pending ? "Building…" : "Build My Apex"}
