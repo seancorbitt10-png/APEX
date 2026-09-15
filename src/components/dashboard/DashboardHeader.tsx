@@ -4,14 +4,17 @@ import { getGreeting } from "@/lib/data/mock";
 
 interface DashboardHeaderProps {
   name: string;
+  initials?: string;
   subtitle?: string;
 }
 
 export function DashboardHeader({
   name,
+  initials,
   subtitle = "Here’s what your training looks like today.",
 }: DashboardHeaderProps) {
   const greeting = getGreeting();
+  const avatar = (initials ?? name.slice(0, 2)).toUpperCase();
 
   return (
     <header className="flex flex-wrap items-start justify-between gap-4 animate-fade-up">
@@ -38,7 +41,7 @@ export function DashboardHeader({
           aria-label="Open profile"
         >
           <span className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-accent-soft text-xs font-bold text-accent">
-            {name.slice(0, 2).toUpperCase()}
+            {avatar}
           </span>
           <span className="hidden sm:inline">{name}</span>
         </Link>

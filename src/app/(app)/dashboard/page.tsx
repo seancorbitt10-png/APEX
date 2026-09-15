@@ -15,7 +15,10 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 lg:space-y-8">
-      <DashboardHeader name={MOCK_ATHLETE.name} />
+      <DashboardHeader
+        name={MOCK_ATHLETE.name}
+        initials={MOCK_ATHLETE.avatarInitials}
+      />
 
       <TrainingHeroCard plan={todaysPlan} />
 
