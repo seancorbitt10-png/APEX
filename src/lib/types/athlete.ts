@@ -1,61 +1,137 @@
-import type { SportId } from "./sport";
+import type { SportConfig, SportId } from "./sport";
 
-export type ExperienceLevel =
-  | "youth"
-  | "high-school"
-  | "college"
-  | "amateur"
-  | "semi-pro"
-  | "pro";
+/** Athlete-stated experience — not a medical or performance score. */
+export type ExperienceLevel = "beginner" | "intermediate" | "advanced";
 
 export type GoalFocus =
   | "speed"
   | "explosiveness"
-  | "first-step"
   | "strength"
-  | "power"
-  | "endurance"
   | "agility"
+  | "conditioning"
+  | "power"
   | "mobility"
-  | "skill"
   | "recovery"
+  | "sport-performance"
+  | "position-specific"
   | (string & {});
 
-export interface TrainingAvailability {
-  daysPerWeek: number;
-  preferredSessionMinutes: number;
-  preferredTimes: Array<"morning" | "afternoon" | "evening">;
-  notes?: string;
+export type EquipmentAccess =
+  | "full-gym"
+  | "basic-weights"
+  | "dumbbells"
+  | "barbell-rack"
+  | "machines"
+  | "resistance-bands"
+  | "field"
+  | "track"
+  | "home-only"
+  | "other";
+
+export type SessionDuration =
+  | "under-30"
+  | "30-45"
+  | "45-60"
+  | "60-90"
+  | "90-plus";
+
+export type SeasonPhase =
+  | "offseason"
+  | "preseason"
+  | "in-season"
+  | "postseason"
+  | "none";
+
+export type ScheduleEventType =
+  | "practice"
+  | "game"
+  | "competition"
+  | "training"
+  | "recovery"
+  | "other";
+
+/**
+ * Per-sport athlete context. Keeps sport-specific fields modular
+ * instead of a flat schema with dozens of nullable columns.
+ */
+export interface AthleteSportProfile {
+  sportId: SportId;
+  isPrimary: boolean;
+  /** Positions and/or events for this sport */
+  positions: string[];
+  experience?: ExperienceLevel;
+  /** Extensible sport-specific metadata without polluting the core schema */
+  metadata?: Record<string, string | number | boolean | string[]>;
 }
 
-export interface ScheduleBlock {
+/**
+ * Fixed commitment / schedule event foundation.
+ * Future NL scheduling can populate these fields.
+ */
+export interface ScheduleEvent {
   id: string;
+  type: ScheduleEventType;
   title: string;
-  type: "practice" | "game" | "competition" | "training" | "recovery" | "other";
-  dayOfWeek?: number; // 0=Sun … 6=Sat for recurring
-  startsAt?: string; // ISO datetime for one-off
-  endsAt?: string;
-  location?: string;
   sportId?: SportId;
+  /** 0=Sun … 6=Sat for recurring weekly commitments */
+  dayOfWeek?: number;
+  startsAt?: string;
+  durationMinutes?: number;
+  importance?: "low" | "normal" | "high";
+  recurring?: boolean;
+  location?: string;
 }
 
 export interface AthleteProfile {
   id: string;
-  name: string;
+  /** Mock user id today → real auth user id later */
+  userId: string;
+  firstName: string;
   age?: number;
   avatarInitials: string;
-  sports: SportId[];
-  primarySportId: SportId;
-  positionOrEvent?: string;
-  experienceLevel?: ExperienceLevel;
+  experienceLevel: ExperienceLevel;
+  sports: AthleteSportProfile[];
   goals: GoalFocus[];
+  primaryGoal?: GoalFocus;
   goalNotes?: string;
-  trainingAvailability?: TrainingAvailability;
-  equipment?: string[];
-  currentSeason?: string;
-  practiceSchedule?: ScheduleBlock[];
-  competitionSchedule?: ScheduleBlock[];
-  trainingPreferences?: string[];
-  /** Placeholder for future readiness / load / wearable metrics */
-  performanceMetrics?: Record<string, number | string>;
+  equipment: EquipmentAccess[];
+  sessionDuration: SessionDuration;
+  daysPerWeek: number;
+  /** Days generally available for additional training (0=Sun … 6=Sat) */
+  availableDays: number[];
+  season: SeasonPhase;
+  schedule: ScheduleEvent[];
+  onboardingCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
+
+/** Structured handoff object for the future AI Coach layer. */
+export interface AthleteContext {
+  athlete: AthleteProfile;
+  sports: SportConfig[];
+  primarySport: SportConfig | null;
+  positions: string[];
+  goals: GoalFocus[];
+  primaryGoal?: GoalFocus;
+  experience: ExperienceLevel;
+  equipment: EquipmentAccess[];
+  availability: {
+    daysPerWeek: number;
+    sessionDuration: SessionDuration;
+    availableDays: number[];
+  };
+  season: SeasonPhase;
+  schedule: ScheduleEvent[];
+}
+
+export type AthleteProfileInput = Omit<
+  AthleteProfile,
+  "id" | "userId" | "avatarInitials" | "createdAt" | "updatedAt"
+> & {
+  id?: string;
+  userId?: string;
+  avatarInitials?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};

@@ -23,6 +23,7 @@ export function proxy(request: NextRequest) {
 
   if (session && pathname === "/login") {
     const url = request.nextUrl.clone();
+    // App layout / signIn decide onboarding vs dashboard
     url.pathname = "/dashboard";
     url.search = "";
     return NextResponse.redirect(url);

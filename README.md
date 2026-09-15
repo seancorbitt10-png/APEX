@@ -5,9 +5,10 @@ Adaptive training for athletes.
 **Initial sport:** Baseball  
 **Long-term:** Multi-sport adaptive athletic training platform
 
-## PR #1 — Foundation
+## Current foundation
 
-This repository currently ships the authenticated application shell, design system, sport-context architecture, and athlete dashboard (mock data). No AI provider is connected yet.
+- **PR #1:** App shell, design system, dashboard, sport registry, AI Coach UI shell
+- **PR #2:** Athlete onboarding, persistent profile, multi-sport athlete context
 
 ### Stack
 
@@ -23,7 +24,9 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Use **Continue to Dashboard** on the login screen (mock session).
+Open [http://localhost:3000](http://localhost:3000). Use **Continue** on the login screen (mock session), then complete onboarding.
+
+Athlete profiles persist as JSON under `data/athletes/` (gitignored). Replace the repository implementation when a real database/auth stack lands.
 
 ### Scripts
 
@@ -36,7 +39,8 @@ Open [http://localhost:3000](http://localhost:3000). Use **Continue to Dashboard
 
 ### Architecture notes
 
-- **Sports** are defined in `src/lib/sports/registry.ts`. Enable future sports by flipping `enabled` and extending config — avoid sport-specific UI forks.
-- **Athlete profile** shape lives in `src/lib/types/athlete.ts`.
-- **Mock dashboard data** is centralized in `src/lib/data/mock.ts` for easy API replacement.
-- **Auth** is a mock cookie session (`apex_session`) via `src/proxy.ts` + server actions. Replace with real auth later.
+- **Sports** are defined in `src/lib/sports/registry.ts`. Enable future sports by flipping `enabled`.
+- **Athlete profile** lives in `src/lib/types/athlete.ts` with modular `AthleteSportProfile` entries.
+- **Persistence:** `src/lib/athlete/repository.ts` (file-backed) → swap later for DB.
+- **AthleteContext** (`buildAthleteContext`) is the handoff object for the future AI Coach.
+- **Auth** remains a mock cookie session (`apex_session` + `apex_user_id`).

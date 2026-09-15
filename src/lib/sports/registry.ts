@@ -14,21 +14,9 @@ export const SPORTS: Record<string, SportConfig> = {
     accent: "#2EE6A8",
     enabled: true,
     config: {
-      positions: [
-        "Pitcher",
-        "Catcher",
-        "First Base",
-        "Second Base",
-        "Third Base",
-        "Shortstop",
-        "Left Field",
-        "Center Field",
-        "Right Field",
-        "Outfielder",
-        "Utility",
-      ],
+      positions: ["Pitcher", "Catcher", "Infield", "Outfield", "Utility"],
       defaultMetrics: ["readiness", "trainingLoad", "recovery", "sprintSpeed"],
-      seasonPhases: ["off-season", "pre-season", "in-season", "post-season"],
+      seasonPhases: ["offseason", "preseason", "in-season", "postseason", "none"],
     },
   },
   football: {

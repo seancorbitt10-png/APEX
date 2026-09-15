@@ -23,28 +23,14 @@ export default function LoginPage() {
             Enter the platform
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-            PR #1 uses a mock session so you can explore the dashboard shell.
-            Real authentication lands in a later PR.
+            Mock authentication for development. After sign-in you’ll create or
+            resume your athlete profile — Apex learns who you are before it
+            coaches you.
           </p>
 
-          <form action={signIn} className="mt-7 space-y-4">
-            <div>
-              <label
-                htmlFor="athlete-name"
-                className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-muted"
-              >
-                Athlete
-              </label>
-              <input
-                id="athlete-name"
-                name="name"
-                defaultValue="Alex"
-                readOnly
-                className="h-11 w-full rounded-[var(--radius-md)] border border-border bg-background px-3 text-sm text-text-primary"
-              />
-            </div>
+          <form action={signIn} className="mt-7">
             <Button type="submit" size="lg" className="w-full">
-              Continue to Dashboard
+              Continue
             </Button>
           </form>
         </div>

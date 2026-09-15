@@ -1,9 +1,12 @@
 import { Suspense } from "react";
 import CoachClient from "./CoachClient";
+import { loadAthleteContext } from "@/lib/athlete/actions";
 
 export const metadata = { title: "AI Coach" };
 
-export default function CoachRoute() {
+export default async function CoachRoute() {
+  const context = await loadAthleteContext();
+
   return (
     <Suspense
       fallback={
@@ -12,7 +15,7 @@ export default function CoachRoute() {
         </div>
       }
     >
-      <CoachClient />
+      <CoachClient athleteContext={context} />
     </Suspense>
   );
 }

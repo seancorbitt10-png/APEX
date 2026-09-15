@@ -4,20 +4,37 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { WeeklyOverview } from "@/components/dashboard/WeeklyOverview";
 import { UpcomingEvents } from "@/components/dashboard/UpcomingEvents";
 import { AICoachEntry } from "@/components/dashboard/AICoachEntry";
-import { MOCK_ATHLETE, MOCK_DASHBOARD } from "@/lib/data/mock";
+import { requireAthleteOrRedirect } from "@/lib/athlete/actions";
+import { buildAthleteContext, getPrimarySport } from "@/lib/athlete/service";
+import { buildDashboardSnapshot } from "@/lib/data/mock";
+import {
+  formatGoalLabel,
+  formatSeasonLabel,
+} from "@/lib/athlete/options";
 
 export const metadata = {
   title: "Dashboard",
 };
 
-export default function DashboardPage() {
-  const { todaysPlan, metrics, week, upcoming } = MOCK_DASHBOARD;
+export default async function DashboardPage() {
+  const athlete = await requireAthleteOrRedirect();
+  const context = buildAthleteContext(athlete);
+  const snapshot = buildDashboardSnapshot(athlete);
+  const primary = getPrimarySport(athlete.sports);
+  const { todaysPlan, metrics, week, upcoming } = snapshot;
 
   return (
     <div className="space-y-6 lg:space-y-8">
       <DashboardHeader
-        name={MOCK_ATHLETE.name}
-        initials={MOCK_ATHLETE.avatarInitials}
+        name={athlete.firstName}
+        initials={athlete.avatarInitials}
+        subtitle={`Primary: ${context.primarySport?.name ?? "Sport"} · ${
+          primary?.positions.join(" · ") || "Athlete"
+        } · Focus: ${
+          athlete.primaryGoal
+            ? formatGoalLabel(athlete.primaryGoal)
+            : "Performance"
+        } · ${formatSeasonLabel(athlete.season)}`}
       />
 
       <TrainingHeroCard plan={todaysPlan} />
@@ -35,7 +52,7 @@ export default function DashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
         <UpcomingEvents events={upcoming} />
-        <AICoachEntry primarySportId={MOCK_ATHLETE.primarySportId} />
+        <AICoachEntry primarySportId={primary?.sportId ?? "baseball"} />
       </div>
     </div>
   );

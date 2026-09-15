@@ -2,7 +2,9 @@ import { notFound } from "next/navigation";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SportBadge } from "@/components/ui/SportBadge";
 import { getSport } from "@/lib/sports/registry";
-import { MOCK_ATHLETE } from "@/lib/data/mock";
+import { requireAthleteOrRedirect } from "@/lib/athlete/actions";
+import { getPrimarySport } from "@/lib/athlete/service";
+import { formatSeasonLabel } from "@/lib/athlete/options";
 
 export const metadata = { title: "Sport" };
 
@@ -13,6 +15,9 @@ export default async function SportDetailPage({
 }) {
   const { sportId } = await params;
   const sport = getSport(sportId);
+  const athlete = await requireAthleteOrRedirect();
+  const primary = getPrimarySport(athlete.sports);
+  const athleteSport = athlete.sports.find((s) => s.sportId === sportId);
 
   if (!sport || !sport.enabled) {
     notFound();
@@ -35,17 +40,15 @@ export default async function SportDetailPage({
           <dl className="mt-4 space-y-3 text-sm">
             <div className="flex justify-between gap-4 border-b border-border-subtle pb-3">
               <dt className="text-text-muted">Primary sport</dt>
-              <dd>
-                {MOCK_ATHLETE.primarySportId === sport.id ? "Yes" : "No"}
-              </dd>
+              <dd>{primary?.sportId === sport.id ? "Yes" : "No"}</dd>
             </div>
             <div className="flex justify-between gap-4 border-b border-border-subtle pb-3">
               <dt className="text-text-muted">Position / event</dt>
-              <dd>{MOCK_ATHLETE.positionOrEvent ?? "—"}</dd>
+              <dd>{athleteSport?.positions.join(" · ") || "—"}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-text-muted">Season</dt>
-              <dd>{MOCK_ATHLETE.currentSeason ?? "—"}</dd>
+              <dd>{formatSeasonLabel(athlete.season)}</dd>
             </div>
           </dl>
         </section>
