@@ -8,6 +8,8 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPublic =
     PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`)) ||
+    pathname.startsWith("/dev/") ||
+    pathname.startsWith("/api/dev/") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
     pathname.includes(".");
@@ -23,6 +25,7 @@ export function proxy(request: NextRequest) {
 
   if (session && pathname === "/login") {
     const url = request.nextUrl.clone();
+    // App layout / signIn decide onboarding vs dashboard
     url.pathname = "/dashboard";
     url.search = "";
     return NextResponse.redirect(url);

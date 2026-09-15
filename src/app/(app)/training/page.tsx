@@ -2,13 +2,15 @@ import Link from "next/link";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Button } from "@/components/ui/Button";
 import { SportBadge } from "@/components/ui/SportBadge";
-import { MOCK_DASHBOARD } from "@/lib/data/mock";
+import { requireAthleteOrRedirect } from "@/lib/athlete/actions";
+import { buildDashboardSnapshot } from "@/lib/data/mock";
 import { getSport } from "@/lib/sports/registry";
 
 export const metadata = { title: "My Training" };
 
-export default function TrainingPage() {
-  const plan = MOCK_DASHBOARD.todaysPlan;
+export default async function TrainingPage() {
+  const athlete = await requireAthleteOrRedirect();
+  const plan = buildDashboardSnapshot(athlete).todaysPlan;
   const sport = getSport(plan.sportId);
 
   return (

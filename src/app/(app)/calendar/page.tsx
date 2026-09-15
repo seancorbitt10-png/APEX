@@ -1,10 +1,14 @@
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { MOCK_DASHBOARD } from "@/lib/data/mock";
+import { requireAthleteOrRedirect } from "@/lib/athlete/actions";
+import { buildDashboardSnapshot } from "@/lib/data/mock";
 import { cn } from "@/lib/utils/cn";
 
 export const metadata = { title: "Calendar" };
 
-export default function CalendarPage() {
+export default async function CalendarPage() {
+  const athlete = await requireAthleteOrRedirect();
+  const snapshot = buildDashboardSnapshot(athlete);
+
   return (
     <div className="space-y-6">
       <SectionHeader
@@ -18,7 +22,7 @@ export default function CalendarPage() {
           Week at a glance
         </h2>
         <ul className="mt-5 space-y-2">
-          {MOCK_DASHBOARD.week.map((day) => (
+          {snapshot.week.map((day) => (
             <li
               key={day.dayKey}
               className={cn(
@@ -38,7 +42,7 @@ export default function CalendarPage() {
           Upcoming events
         </h2>
         <ul className="mt-4 space-y-3">
-          {MOCK_DASHBOARD.upcoming.map((event) => (
+          {snapshot.upcoming.map((event) => (
             <li
               key={event.id}
               className="flex items-center justify-between border-b border-border-subtle pb-3 text-sm last:border-0 last:pb-0"
